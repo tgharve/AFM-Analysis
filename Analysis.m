@@ -602,7 +602,7 @@ function axes2_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to axes2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-handles.axes1 = hObject;
+handles.axes2 = hObject;
 g = gausswin(100); % <-- this value determines the width of the smoothing window
 handles.g = g/sum(g);
 fname = getappdata(0,'fname');
