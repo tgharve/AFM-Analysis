@@ -22,7 +22,7 @@ function varargout = Start(varargin)
 
 % Edit the above text to modify the response to help Start
 
-% Last Modified by GUIDE v2.5 27-Feb-2017 10:56:59
+% Last Modified by GUIDE v2.5 15-Feb-2018 08:40:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -140,5 +140,3 @@ end
 fileroots = intersect(zsnsr_names, intersect(defl_names, raw_names));
 setappdata(0,'fileroots',fileroots);
 Analysis();
-
-

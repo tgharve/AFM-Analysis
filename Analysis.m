@@ -304,7 +304,7 @@ if(handles.step >= 2 && handles.step <6)
         handles.currenty = currenty;
         handles.base = base;
     end
-    handles.step=3;
+    
 elseif (handles.step == 6)
     h = msgbox('This curve was already converted to a force.','Error','Error');
 
@@ -444,13 +444,15 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if(handles.step>=3 && handles.step <4)
+    
     currentx = handles.currentx;
     currenty = handles.currenty;
+   
     currentx = currentx - currenty;
     set(handles.P,'xdata',currentx,'ydata',currenty);
     set(handles.O,'xdata',currentx,'ydata',zeros(size(currentx)));
     set(handles.Ov,'xdata',zeros(size(currenty)),'ydata',currenty);
-
+    
     xlabel('Tip-Sample Separation Distance (nm)');
     drawnow();
     clear handles.currentx;
@@ -461,7 +463,7 @@ elseif (handles.step == 6)
 elseif (handles.step == 4 || handles.step == 5)
     h = msgbox('This curve was already converted to tip deflection.','Error','Error');
 else
-    h = msgbox('You must remove the baseline offset first.','Error','Error');
+    h = msgbox('You must perform curve correction (Step 2) first.','Error','Error');
 end
 guidata(hObject, handles);
 
@@ -677,3 +679,53 @@ function edit4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+% --- Executes on button press in pushbutton15.
+function pushbutton15_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if(handles.step >= 2 && handles.step <6)
+    uiwait(msgbox('Click on the plot to draw a box around the linear portion of the indentation. Double-click the box when finished.','Sensitivity Correction','modal'));
+    sc = false;
+    while (sc == false)
+        b = imrect;
+        pos = wait(b);
+        answer = questdlg('Is this box you drew correct?','Sensitivity Correction','Yes','Try Again','Cancel','Try Again');
+        switch answer
+            case 'Yes'
+                sc = true;
+                delete(b);
+            case 'Cancel'
+                delete(b);
+                break
+            case 'Try Again'
+                delete(b);
+        end
+    end
+    if (sc)
+        currentx = handles.currentx;
+        currenty = handles.currenty;
+        ind = find(currentx(currentx<pos(1)));
+        p1 = max(ind);
+        ind = find(currentx(currentx<pos(1)+pos(3)));
+        p2 = max(ind);
+        m = polyfit(currenty(p1:p2),currentx(p1:p2),1);
+        currenty = currenty/m(1);
+        set(handles.P,'xdata',currentx,'ydata',currenty);
+        set(handles.O,'xdata',currentx,'ydata',zeros(size(currentx)));
+        set(handles.Ov,'xdata',zeros(size(currenty)),'ydata',currenty);
+
+        drawnow();
+        clear handles.currenty;
+        handles.currenty = currenty;
+    end
+    handles.step=3;
+elseif (handles.step == 6)
+    h = msgbox('This curve was already converted to a force.','Error','Error');
+
+else
+    h = msgbox('No curve loaded.', 'Error', 'Error');
+end
+guidata(hObject,handles);
+
